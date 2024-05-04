@@ -3,6 +3,7 @@ package main
 import (
 	"gin/controllers"
 	"gin/infra"
+	"gin/middlewares"
 
 	"gin/repositories"
 	"gin/services"
@@ -24,13 +25,14 @@ func main() {
 
 	r := gin.Default()
 	itemRouter := r.Group("/items")
+	itemRouterWithAuth := r.Group("/items", middlewares.AuthMiddleware(authService))
 	authRouter := r.Group("/auth")
 
-	itemRouter.GET("/items", itemController.FindAll)
-	itemRouter.GET("/items/:id", itemController.FindById)
-	itemRouter.POST("/items", itemController.Create)
-	itemRouter.PUT("/items/:id", itemController.Update)
-	itemRouter.DELETE("/items/:id", itemController.Delete)
+	itemRouter.GET("", itemController.FindAll)
+	itemRouter.GET("/:id", itemController.FindById)
+	itemRouterWithAuth.POST("", itemController.Create)
+	itemRouter.PUT("/:id", itemController.Update)
+	itemRouter.DELETE("/:id", itemController.Delete)
 
 	authRouter.POST("/signup", authController.Signup)
 	authRouter.POST("/login", authController.Login)
